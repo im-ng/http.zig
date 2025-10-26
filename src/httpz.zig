@@ -633,6 +633,12 @@ pub fn Server(comptime H: type) type {
                     return middlewares[index].execute(self.req, self.res, self);
                 }
 
+                // check response status
+                const status = @intFromEnum(std.http.Status.unauthorized);
+                if (self.res.status == status and (comptime std.meta.hasFn(Handler, "unauthorized"))) {
+                    return self.handler.unauthorized(self.req, self.res);
+                }
+
                 // done executing our middlewares, now we either execute the
                 // dispatcher or not found.
                 if (self.dispatchable_action) |da| {
