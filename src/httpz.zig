@@ -639,12 +639,24 @@ pub fn Server(comptime H: type) type {
                     return self.handler.unauthorized(self.req, self.res);
                 }
 
+                // check for ws status
+                // const wsStatus = @intFromEnum(std.http.Status.upgrade_required);
+                // if (self.res.status == wsStatus and (comptime std.meta.hasFn(Handler, "ws"))) {
+                //     return self.handler.ws(self.req, self.res);
+                // }
+
                 // done executing our middlewares, now we either execute the
                 // dispatcher or not found.
                 if (self.dispatchable_action) |da| {
                     if (comptime H == void) {
                         return da.dispatcher(da.action, self.req, self.res);
                     }
+
+                    const wsStatus = @intFromEnum(std.http.Status.upgrade_required);
+                    if (self.res.status == wsStatus and (comptime std.meta.hasFn(Handler, "ws"))) {
+                        return self.handler.ws(da.action, self.req, self.res);
+                    }
+
                     return da.dispatcher(da.handler, da.action, self.req, self.res);
                 }
 
