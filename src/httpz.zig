@@ -11,6 +11,8 @@ pub const response = @import("response.zig");
 pub const key_value = @import("key_value.zig");
 pub const middleware = @import("middleware/middleware.zig");
 
+pub const metriks = @import("metrics");
+
 pub const Router = routing.Router;
 pub const Request = request.Request;
 pub const Response = response.Response;
