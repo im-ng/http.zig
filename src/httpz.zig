@@ -238,7 +238,7 @@ pub fn Server(comptime H: type) type {
         else => @compileError("Server handler must be a struct, got: " ++ @tagName(@typeInfo(H))),
     };
 
-    const ActionArg = if (comptime std.meta.hasFn(Handler, "dispatch")) @typeInfo(@TypeOf(Handler.dispatch)).@"fn".param_types[1].? else Action(H);
+    const ActionArg = if (comptime std.meta.hasFn(Handler, "dispatch")) @typeInfo(@TypeOf(Handler.dispatch)).@"fn".params[1].type.? else Action(H);
 
     const has_websocket = Handler != void and @hasDecl(Handler, "WebsocketHandler");
     const WebsocketHandler = if (has_websocket) Handler.WebsocketHandler else DummyWebsocketHandler;
@@ -594,7 +594,7 @@ pub fn Server(comptime H: type) type {
 
             const m = try arena.create(M);
             errdefer arena.destroy(m);
-            switch (comptime @typeInfo(@TypeOf(M.init)).@"fn".param_types.len) {
+            switch (comptime @typeInfo(@TypeOf(M.init)).@"fn".params.len) {
                 1 => m.* = try M.init(config),
                 2 => m.* = try M.init(config, MiddlewareConfig{
                     .arena = arena,
@@ -634,6 +634,12 @@ pub fn Server(comptime H: type) type {
                     if (comptime H == void) {
                         return da.dispatcher(da.action, self.req, self.res);
                     }
+
+                    const wsStatus = @intFromEnum(std.http.Status.upgrade_required);
+                    if (self.res.status == wsStatus and (comptime std.meta.hasFn(Handler, "ws"))) {
+                        return self.handler.ws(da.action, self.req, self.res);
+                    }
+
                     return da.dispatcher(da.handler, da.action, self.req, self.res);
                 }
 
@@ -700,7 +706,7 @@ pub fn upgradeWebsocket(comptime H: type, req: *Request, res: *Response, ctx: an
     try w.flush();
 
     if (comptime std.meta.hasFn(H, "afterInit")) {
-        const params = @typeInfo(@TypeOf(H.afterInit)).@"fn".param_types;
+        const params = @typeInfo(@TypeOf(H.afterInit)).@"fn".params;
         try if (comptime params.len == 1) hc.handler.?.afterInit() else hc.handler.?.afterInit(ctx);
     }
     try ws_worker.setupConnection(hc);

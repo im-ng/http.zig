@@ -287,7 +287,7 @@ fn Worker(comptime F: anytype) type {
 }
 
 fn SpawnArgs(FullArgs: anytype) type {
-    const full_field_types = std.meta.fieldTypes(FullArgs);
+    const full_field_types = std.meta.fields(FullArgs);
     const ARG_COUNT = full_field_types.len - 1;
 
     // Args will be FullArgs[0..len-1], so in the above example, args would be
@@ -302,7 +302,7 @@ fn SpawnArgs(FullArgs: anytype) type {
 
     var field_types: [ARG_COUNT]type = undefined;
     inline for (full_field_types[0..ARG_COUNT], 0..) |field_type, i| {
-        field_types[i] = field_type;
+        field_types[i] = field_type.type;
     }
     return @Tuple(&field_types);
 }
