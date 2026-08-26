@@ -18,7 +18,7 @@ pub fn init(config: httpz.Config) Testing {
     // thereafter to change whatever properties they want.
     var base_request: std.Io.Reader = .fixed("GET / HTTP/1.1\r\nContent-Length: 0\r\n\r\n");
     while (true) {
-        const done = conn.req_state.parse(conn.req_arena.allocator(), &base_request) catch unreachable;
+        const done = conn.req_state.parse(conn, &base_request) catch unreachable;
         if (done) {
             break;
         }
@@ -151,9 +151,9 @@ pub const Testing = struct {
     pub fn form(self: *Testing, data: anytype) void {
         var arr: ArrayList(u8) = .empty;
 
-        inline for (@typeInfo(@TypeOf(data)).@"struct".fields) |field| {
-            const name = escapeString(self.arena, field.name) catch unreachable;
-            const value = escapeString(self.arena, @field(data, field.name)) catch unreachable;
+        inline for (@typeInfo(@TypeOf(data)).@"struct".field_names) |field_name| {
+            const name = escapeString(self.arena, field_name) catch unreachable;
+            const value = escapeString(self.arena, @field(data, field_name)) catch unreachable;
             arr.appendSlice(self.arena, name) catch unreachable;
             arr.append(self.arena, '=') catch unreachable;
             arr.appendSlice(self.arena, value) catch unreachable;
@@ -285,6 +285,22 @@ pub fn parseWithAllocator(allocator: Allocator, data: []u8) !Testing.Response {
         .allocator = allocator,
         .body = raw[header_length .. header_length + body_length],
     };
+}
+
+/// Waits until a TCP port is accepting connections (e.g. after starting a server in another thread).
+/// Tries up to 100 times with 20ms sleep between attempts.
+pub fn waitForPort(port: u16) !void {
+    const address = std.Io.net.IpAddress.parse("127.0.0.1", port) catch unreachable;
+    for (0..100) |_| {
+        if (address.connect(t.io, .{ .mode = .stream })) |stream| {
+            stream.close(t.io);
+            return;
+        } else |err| {
+            if (err != error.ConnectionRefused) return err;
+            try t.io.sleep(.fromMilliseconds(20), .awake);
+        }
+    }
+    return error.ConnectionRefused;
 }
 
 fn decodeChunkedEncoding(full_dest: []u8, full_src: []u8) usize {
