@@ -28,7 +28,7 @@ const FixedBufferAllocator = std.heap.FixedBufferAllocator;
 const log = std.log.scoped(.httpz);
 
 const worker = @import("worker.zig");
-const HTTPConn = worker.HTTPConn;
+pub const HTTPConn = worker.HTTPConn;
 
 const build = @import("build");
 const force_blocking: bool = if (@hasDecl(build, "httpz_blocking")) build.httpz_blocking else false;
