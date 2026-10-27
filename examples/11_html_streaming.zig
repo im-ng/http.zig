@@ -28,7 +28,6 @@ pub fn main(init: std.process.Init) !void {
 }
 
 fn index(_: *httpz.Request, res: *httpz.Response) !void {
-
     try res.chunk(
         \\<!DOCTYPE html>
         \\<html>

@@ -42,7 +42,7 @@ pub fn execute(self: *const Logger, req: *httpz.Request, res: *httpz.Response, e
 
     defer {
         const elapsed = start.untilNow(self.io, .awake);
-        std.log.info("{d}\t{s}?{s}\t{d}\t{d}us", .{start, req.url.path, if (self.query) req.url.query else "", res.status, elapsed.toMicroseconds()});
+        std.log.info("{d}\t{s}?{s}\t{d}\t{d}us", .{ start, req.url.path, if (self.query) req.url.query else "", res.status, elapsed.toMicroseconds() });
     }
 
     // If you don't call executor.next(), there will be no further processing of

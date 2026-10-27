@@ -10,12 +10,10 @@ pub fn build(b: *std.Build) !void {
 
     const enable_tsan = b.option(bool, "tsan", "Enable ThreadSanitizer");
 
-    const httpz_module = b.addModule("httpz", .{
-        .link_libc = true,
+        const httpz_module = b.addModule("httpz", .{
         .root_source_file = b.path("src/httpz.zig"),
         .target = target,
         .optimize = optimize,
-        .sanitize_thread = enable_tsan,
         .imports = &.{
             .{ .name = "metrics", .module = metrics_module },
             .{ .name = "websocket", .module = websocket_module },
@@ -49,6 +47,7 @@ pub fn build(b: *std.Build) !void {
 
         tests.root_module.addImport("metrics", metrics_module);
         // tests.root_module.addImport("websocket", websocket_module);
+        tests.root_module.sanitize_thread = enable_tsan orelse false;
         const run_test = b.addRunArtifact(tests);
         run_test.has_side_effects = true;
 

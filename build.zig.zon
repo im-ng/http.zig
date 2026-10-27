@@ -1,7 +1,7 @@
 .{
     .name = .httpz,
     .paths = .{""},
-    .version = "0.0.0",
+    .version = "0.0.17",
     .fingerprint = 0x472add02ac73d53c,
     .dependencies = .{
         .metrics = .{
