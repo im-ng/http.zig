@@ -90,7 +90,7 @@ fn ws(_: Handler, req: *httpz.Request, res: *httpz.Response) !void {
     // The context is any arbitrary data you want to pass to Client.init.
     const ctx = Client.Context{ .user_id = 9001 };
 
-    // The first parameter, Client, ***MUST*** be the same as Handler.WebSocketHandler
+    // The first parameter, Client, ***MUST***be the same as Handler.WebSocketHandler
     // I'm sorry about the awkwardness of that.
     // It's undefined behavior if they don't match, and it _will_ behave weirdly/crash.
     if (try httpz.upgradeWebsocket(Client, req, res, &ctx) == false) {

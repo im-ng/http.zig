@@ -1,16 +1,16 @@
 .{
     .name = .httpz,
     .paths = .{""},
-    .version = "0.0.0",
+    .version = "0.0.17",
     .fingerprint = 0x472add02ac73d53c,
     .dependencies = .{
         .metrics = .{
-            .url = "git+https://github.com/im-ng/metrics.zig.git#b9a29ac96e0e42dd88a46999846c9b5c03e1ff27",
-            .hash = "metrics-0.0.0-KpIpz-DCAQBJwNRg2BA_Tvyat-MNmifSG1WuERP4gvAj",
+            .url = "git+https://github.com/im-ng/metrics.zig.git#65e218d8a918769863c246090df0d738aebae89e",
+            .hash = "metrics-0.0.0-KpIpz8DEAQDeqnqO9xCtEBQWWD9s0-CxvvpTgMcHgA-i",
         },
         .websocket = .{
-            .url = "git+https://github.com/karlseguin/websocket.zig.git#efa879736bd438bea8b86a91f220ba408de57273",
-            .hash = "websocket-0.1.0-ZPISdWoTBQA8iviFsepUZiKrmT-oEyc-BwfbVzYwu7LO",
+            .url = "git+https://github.com/karlseguin/websocket.zig.git#f2b3bad6875595e8dd42c726e8e914885a8b0ba0",
+            .hash = "websocket-0.1.0-ZPISdbERBQCnk2-UDVSJlOss6POs_aAJR2nrccYJ1wZm",
         },
         // .metrics = .{ .path = "../metrics.zig" },
         // .websocket = .{ .path = "../websocket.zig" },
